@@ -4,23 +4,28 @@ namespace ScreenTools.Tests
 {
     public class UnitTest
     {
-        const string screenfile = @"c:\users\22791\desktop\screen_test.png";
-        const string windowfile = @"c:\users\22791\desktop\window_test.png";
+        const string filename = @"c:\users\22791\desktop\unit_test.png";
 
         [Fact]
         public void GetScreenImage()
         {
-            Capture.ScreenToFile(screenfile);
-            bool exists = System.IO.File.Exists(screenfile);
-            Assert.True(exists);
+            var img = Capture.GetScreenImage();
+            Assert.NotNull(img);
         }
 
         [Fact]
         public void GetWindowImage()
         {
-            Capture.ActiveWindowToFile(windowfile);
-            bool exists = System.IO.File.Exists(windowfile);
-            Assert.True(exists);
+            var img = Capture.GetActiveWindowImage();
+            Assert.NotNull(img);
+        }
+
+        [Fact]
+        public void SaveImageToFile()
+        {
+            System.Drawing.Image img = null;
+            Capture.SaveImageToFile(img, filename);
+            Assert.True(System.IO.File.Exists(filename));
         }
     }
 }

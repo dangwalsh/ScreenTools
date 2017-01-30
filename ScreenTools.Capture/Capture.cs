@@ -14,27 +14,37 @@ namespace ScreenTools
     public class Capture
     {
         /// <summary>
-        /// Captures a screen shot of the active window, and saves it to a file
+        /// Captures an image of the active window
         /// </summary>
-        /// <param name="filename">The output file path (must contain a valid extension)</param>
         /// <search>capture, window, image</search>
-        public static void ActiveWindowToFile(string filename)
+        /// <returns>The capture image</returns>
+        public static Image GetActiveWindowImage()
         {
-            ImageFormat format = GetImageFormat(filename);
             IntPtr handle = User32.GetForegroundWindow();
             Image img = CaptureWindow(handle);
-            img.Save(filename, format);
+            return img;
         }
 
         /// <summary>
-        /// Captures a screen shot of the entire desktop, and saves it to a file
+        /// Captures an image of the main screen
         /// </summary>
+        /// <search>capture, screen, image</search>
+        /// <returns>The capture image</returns>
+        public static Image GetScreenImage()
+        {
+            Image img = CaptureScreen();
+            return img;
+        }
+
+        /// <summary>
+        /// Saves an image to a file of a specified type
+        /// </summary>
+        /// <param name="img">The image to be saved</param>
         /// <param name="filename">The output file path (must contain a valid extension)</param>
-        /// /// <search>capture, screen, image</search>
-        public static void ScreenToFile(string filename)
+        /// <search>capture, window, image</search>
+        public static void SaveImageToFile(Image img, string filename)
         {
             ImageFormat format = GetImageFormat(filename);
-            Image img = CaptureScreen();
             img.Save(filename, format);
         }
 

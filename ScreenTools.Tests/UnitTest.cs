@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace ScreenTools.Tests
+namespace ScreenTools.Capture.Tests
 {
     public class UnitTest
     {
@@ -9,14 +9,14 @@ namespace ScreenTools.Tests
         [Fact]
         public void GetScreenImage()
         {
-            var img = Capture.GetScreenImage();
+            var img = CaptureFacade.GetScreenImage();
             Assert.NotNull(img);
         }
 
         [Fact]
         public void GetWindowImage()
         {
-            var img = Capture.GetActiveWindowImage();
+            var img = CaptureFacade.GetActiveWindowImage();
             Assert.NotNull(img);
         }
 
@@ -24,7 +24,7 @@ namespace ScreenTools.Tests
         public void SaveImageToFile()
         {
             System.Drawing.Image img = null;
-            Capture.SaveImageToFile(img, filename);
+            CaptureFacade.SaveImageToFile(img, filename);
             Assert.True(System.IO.File.Exists(filename));
         }
     }

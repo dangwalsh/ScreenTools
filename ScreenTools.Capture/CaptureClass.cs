@@ -6,52 +6,17 @@ using System.Drawing.Imaging;
 using System.CodeDom.Compiler;
 using System.CodeDom;
 
-namespace ScreenTools
+namespace ScreenTools.Capture
 {
     /// <summary>
     /// Provides functions to capture the entire screen, or a particular window, and save it to a file.
     /// </summary>
-    public class Capture
+    internal class CaptureClass
     {
-        /// <summary>
-        /// Captures an image of the active window
-        /// </summary>
-        /// <search>capture, window, image</search>
-        /// <returns>The capture image</returns>
-        public static Image GetActiveWindowImage()
-        {
-            IntPtr handle = User32.GetForegroundWindow();
-            Image img = CaptureWindow(handle);
-            return img;
-        }
-
-        /// <summary>
-        /// Captures an image of the main screen
-        /// </summary>
-        /// <search>capture, screen, image</search>
-        /// <returns>The capture image</returns>
-        public static Image GetScreenImage()
-        {
-            Image img = CaptureScreen();
-            return img;
-        }
-
-        /// <summary>
-        /// Saves an image to a file of a specified type
-        /// </summary>
-        /// <param name="img">The image to be saved</param>
-        /// <param name="filename">The output file path (must contain a valid extension)</param>
-        /// <search>capture, window, image</search>
-        public static void SaveImageToFile(Image img, string filename)
-        {
-            ImageFormat format = GetImageFormat(filename);
-            img.Save(filename, format);
-        }
-
         /// <summary>
         /// Default constructor is hidden from Dynamo
         /// </summary>
-        internal Capture()
+        internal CaptureClass()
         {
 
         }
@@ -63,6 +28,15 @@ namespace ScreenTools
         internal static Image CaptureScreen()
         {
             return CaptureWindow(User32.GetDesktopWindow());
+        }
+
+        /// <summary>
+        /// Exposes the User32 window method to the assembly
+        /// </summary>
+        /// <returns></returns>
+        internal static IntPtr GetWindowHandle()
+        {
+            return User32.GetForegroundWindow();
         }
 
         /// <summary>
@@ -134,23 +108,6 @@ namespace ScreenTools
                     throw new ArgumentException("File extension is not related to a valid image format!");
             }
             return format;
-        }
-
-        /// <summary>
-        /// Helper function to convert strings to literals
-        /// </summary>
-        /// <param name="input">The string to be converted</param>
-        /// <returns></returns>
-        internal static string ToLiteral(string input)
-        {
-            using (var writer = new StringWriter())
-            {
-                using (var provider = CodeDomProvider.CreateProvider("CSharp"))
-                {
-                    provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, null);
-                    return writer.ToString();
-                }
-            }
         }
 
         /// <summary>

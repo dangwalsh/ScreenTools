@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenTools.Capture", "ScreenTools.Capture\ScreenTools.Capture.csproj", "{74262E0F-D6A7-4463-B679-F2279CF75ED3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenTools.Tests", "ScreenTools.Tests\ScreenTools.Tests.csproj", "{336341DD-3879-4D4A-A0FA-64A8CB792E5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenTools.Capture.Tests", "ScreenTools.Tests\ScreenTools.Capture.Tests.csproj", "{336341DD-3879-4D4A-A0FA-64A8CB792E5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,20 +3,18 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.CodeDom.Compiler;
-using System.CodeDom;
 
 namespace ScreenTools.Capture
 {
     /// <summary>
     /// Provides functions to capture the entire screen, or a particular window, and save it to a file.
     /// </summary>
-    internal class CaptureClass
+    internal class CaptureLogic
     {
         /// <summary>
         /// Default constructor is hidden from Dynamo
         /// </summary>
-        internal CaptureClass()
+        internal CaptureLogic()
         {
 
         }

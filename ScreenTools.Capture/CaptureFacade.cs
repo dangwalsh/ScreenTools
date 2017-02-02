@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Threading;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
+
 
 namespace ScreenTools.Capture
 {
@@ -14,14 +11,20 @@ namespace ScreenTools.Capture
     /// </summary>
     public class CaptureFacade
     {
-        public static object CaptureAnimation(int seconds, int framerate=15)
+        /// <summary>
+        /// Captures a series of images of the screen over a specified time
+        /// </summary>
+        /// <param name="seconds"></param>
+        /// <param name="fps"></param>
+        /// <returns></returns>
+        public static object CaptureAnimation(int seconds, int fps=5)
         {
-            int frames = seconds * framerate;
+            int frames = seconds * fps;
             Image[] images = new Image[frames];
             for (int i = 0; i < frames; ++i)
             {
                 images[i] = CaptureLogic.CaptureScreen();
-                Thread.Sleep(1000 / framerate);
+                Thread.Sleep(1000 / fps);
             }
             return images;
         }
@@ -58,35 +61,7 @@ namespace ScreenTools.Capture
         public static void SaveCapture(object data, string filename)
         {
             ImageFormat format = CaptureLogic.GetImageFormat(filename);
-
-            Image image = data as Image; // TODO: verify that this returns null if it's an array.
-            if (image == null)
-            {
-                var images = data as Image[];
-                if (images == null)
-                {
-                    throw new Exception("File is not a valid animation");
-                }
-
-                var gifEnconder = new GifBitmapEncoder();
-                foreach (Bitmap bitmap in images)
-                {
-                    var source = Imaging.CreateBitmapSourceFromHBitmap(
-                        bitmap.GetHbitmap(), 
-                        IntPtr.Zero, 
-                        Int32Rect.Empty, 
-                        BitmapSizeOptions.FromEmptyOptions());
-                    gifEnconder.Frames.Add(BitmapFrame.Create(source));
-                }
-
-                using (FileStream stream = new FileStream(filename, FileMode.Create))
-                {
-                    gifEnconder.Save(stream);
-                }
-
-                return;
-            }
-            image.Save(filename, format);
+            CaptureLogic.SaveImage(data, filename, format);      
         }
 
         /// <summary>

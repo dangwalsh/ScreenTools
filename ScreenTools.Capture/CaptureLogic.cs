@@ -3,6 +3,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 
 namespace ScreenTools.Capture
 {
@@ -17,6 +20,56 @@ namespace ScreenTools.Capture
         internal CaptureLogic()
         {
 
+        }
+
+        /// <summary>
+        /// Saves an image to the filesystem.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="filename"></param>
+        /// <param name="format"></param>
+        internal static void SaveImage(object data, string filename, ImageFormat format)
+        {
+            Image image = data as Image;
+            if (image != null)
+            {
+                image.Save(filename, format);
+                return;
+            }
+
+            Image[] images = data as Image[];
+            if (images != null)
+            {
+                SaveAnimation(images, filename);
+                return;
+            }
+
+            throw new Exception("File is not a valid animation"); 
+        }
+
+        /// <summary>
+        /// Converts an array of images to .gif and saves them to the filesystem.
+        /// </summary>
+        /// <param name="images"></param>
+        /// <param name="filename"></param>
+        internal static void SaveAnimation(Image[] images, string filename)
+        {
+            GifBitmapEncoder gifEnconder = new GifBitmapEncoder();
+
+            foreach(Bitmap bitmap in images)
+            {
+                BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(
+                    bitmap.GetHbitmap(),
+                    IntPtr.Zero,
+                    Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+                gifEnconder.Frames.Add(BitmapFrame.Create(source));
+            }
+           
+            using (FileStream stream = new FileStream(filename, FileMode.Create))
+            {
+                gifEnconder.Save(stream);
+            }
         }
 
         /// <summary>
@@ -66,11 +119,11 @@ namespace ScreenTools.Capture
             GDI32.DeleteDC(hdcDest);
             User32.ReleaseDC(handle, hdcSrc);
             // get a .NET image object for it
-            Image img = Image.FromHbitmap(hBitmap);
+            Image image = Image.FromHbitmap(hBitmap);
             // free up the Bitmap object
             GDI32.DeleteObject(hBitmap);
 
-            return img;
+            return image;
         }
 
         /// <summary>

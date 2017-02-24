@@ -1,84 +1,80 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
-namespace ScreenTools.Capture
+
+namespace Tools
 {
     /// <summary>
-    /// Provides functions to capture the entire screen, or a particular window, and save it to a file.
+    /// This class contains methods to capture screen images
     /// </summary>
-    internal class CaptureLogic
+    public class Capture
     {
         /// <summary>
-        /// Default constructor is hidden from Dynamo
+        /// Captures an image of the active window
         /// </summary>
-        internal CaptureLogic()
+        /// <search>capture, window, image</search>
+        /// <returns>The capture image</returns>
+        public static object Window()
         {
-
+            var handle = GetWindowHandle();
+            var image = DoCaptureWindow(handle);
+            return image;
         }
 
         /// <summary>
-        /// Saves an image to the filesystem.
+        /// Captures an image of the main screen
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="filename"></param>
-        /// <param name="format"></param>
-        internal static void SaveImage(object data, string filename, ImageFormat format)
+        /// <search>capture, screen, image</search>
+        /// <returns>The capture image</returns>
+        public static object Screen()
         {
-            Image image = data as Image;
-            if (image != null)
-            {
-                image.Save(filename, format);
-                return;
-            }
-
-            Image[] images = data as Image[];
-            if (images != null)
-            {
-                SaveAnimation(images, filename);
-                return;
-            }
-
-            throw new Exception("File is not a valid animation"); 
+            var image = DoCaptureScreen();
+            return image;
         }
 
         /// <summary>
-        /// Converts an array of images to .gif and saves them to the filesystem.
+        /// Captures a series of images of the screen over a specified time
         /// </summary>
-        /// <param name="images"></param>
-        /// <param name="filename"></param>
-        internal static void SaveAnimation(Image[] images, string filename)
+        /// <param name="seconds"></param>
+        /// <param name="fps"></param>
+        /// <returns></returns>
+        internal static object Timed(int seconds, int fps = 5)
         {
-            GifBitmapEncoder gifEnconder = new GifBitmapEncoder();
-
-            foreach(Bitmap bitmap in images)
+            var frames = seconds * fps;
+            var images = new Image[frames];
+            for (int index = 0; index < frames; ++index)
             {
-                BitmapSource source = Imaging.CreateBitmapSourceFromHBitmap(
-                    bitmap.GetHbitmap(),
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-                gifEnconder.Frames.Add(BitmapFrame.Create(source));
+                images[index] = DoCaptureScreen();
+                Thread.Sleep(1000 / fps);
             }
-           
-            using (FileStream stream = new FileStream(filename, FileMode.Create))
-            {
-                gifEnconder.Save(stream);
-            }
+            return images;
         }
+
+        /// <summary>
+        /// Encapsulates the default constructor in the assembly
+        /// </summary>
+        internal Capture()
+        {
+
+        }
+
 
         /// <summary>
         /// Creates an Image object containing a screen shot of the entire desktop
         /// </summary>
         /// <returns></returns>
-        internal static Image CaptureScreen()
+        internal static Image DoCaptureScreen()
         {
-            return CaptureWindow(User32.GetDesktopWindow());
+            return DoCaptureWindow(User32.GetDesktopWindow());
         }
 
         /// <summary>
@@ -95,7 +91,7 @@ namespace ScreenTools.Capture
         /// </summary>
         /// <param name="handle">The handle to the window. (In windows forms, this is obtained by the Handle property)</param>
         /// <returns></returns>
-        internal static Image CaptureWindow(IntPtr handle)
+        internal static Image DoCaptureWindow(IntPtr handle)
         {
             // get te hDC of the target window
             IntPtr hdcSrc = User32.GetWindowDC(handle);
@@ -212,4 +208,3 @@ namespace ScreenTools.Capture
         }
     }
 }
-
